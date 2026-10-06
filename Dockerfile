@@ -19,9 +19,9 @@ USER civic
 
 ENV CIVIC_COMPASS_DB=/srv/data/civic_compass.sqlite3
 
-EXPOSE 5021
+EXPOSE 6021
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
-  CMD python -c "import urllib.request;urllib.request.urlopen('http://127.0.0.1:5021/healthz')"
+  CMD python -c "import urllib.request;urllib.request.urlopen('http://127.0.0.1:6021/healthz')"
 
-CMD ["sh", "-c", "python -m app.seed --if-empty && uvicorn app.main:app --host 0.0.0.0 --port 5021"]
+CMD ["sh", "-c", "python -m app.seed --if-empty && uvicorn app.main:app --host 0.0.0.0 --port 6021"]

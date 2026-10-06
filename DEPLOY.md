@@ -44,9 +44,9 @@ docker compose logs -f           # ctrl-C once you see uvicorn listening
 
 | From | URL |
 |---|---|
-| Your desktop, same router | `http://10.0.0.202:5021` |
-| Your phone, off network | `http://<dell-tailscale-name>:5021` |
-| Operations console | `http://10.0.0.202:5021/ops?token=<the token from .env>` |
+| Your desktop, same router | `http://10.0.0.202:6021` |
+| Your phone, off network | `http://<dell-tailscale-name>:6021` |
+| Operations console | `http://10.0.0.202:6021/ops?token=<the token from .env>` |
 
 Add it to Homepage alongside the rest of the fleet. Health endpoint for the widget is
 `/healthz`.

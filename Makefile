@@ -7,7 +7,7 @@ seed:
 	python -m app.seed
 
 run: seed
-	uvicorn app.main:app --host 0.0.0.0 --port 5021 --reload
+	uvicorn app.main:app --host 0.0.0.0 --port 6021 --reload
 
 test:
 	python -m pytest tests -q

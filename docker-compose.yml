@@ -4,7 +4,7 @@ services:
     container_name: civic-compass
     restart: unless-stopped
     ports:
-      - "5021:5021"
+      - "6021:6021"
     volumes:
       - ./data:/srv/data
     environment:

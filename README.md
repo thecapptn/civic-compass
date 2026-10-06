@@ -47,7 +47,7 @@ require a migration.
 ## Running it
 
 ```bash
-docker compose up --build          # http://localhost:5021
+docker compose up --build          # http://localhost:6021
 ```
 
 Or without Docker:
@@ -55,10 +55,10 @@ Or without Docker:
 ```bash
 pip install -r requirements.txt
 python -m app.seed
-uvicorn app.main:app --port 5021
+uvicorn app.main:app --port 6021
 ```
 
-Operations console: `http://localhost:5021/ops?token=demo-ops-token`
+Operations console: `http://localhost:6021/ops?token=demo-ops-token`
 (set `CIVIC_COMPASS_OPS_TOKEN` for anything beyond localhost).
 
 ```bash
