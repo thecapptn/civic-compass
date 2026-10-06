@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Report {{ report.id }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>Report {{ report.id }}</h1>
+<div class="card">
+  <dl class="cand__fields">
+    <div class="cand__field"><dt>Submitted</dt><dd>{{ report.submitted_at[:16] | replace('T',' ') }} UTC</dd></div>
+    <div class="cand__field"><dt>Type</dt><dd>{{ report.issue_type | replace('_',' ') }}</dd></div>
+    <div class="cand__field"><dt>Record</dt>
+      <dd>{% if report.entity_id %}{{ report.entity_table }}/{{ report.entity_id }}{% else %}Not attached to a specific record.{% endif %}</dd></div>
+    <div class="cand__field"><dt>Status</dt>
+      <dd>{{ {'new':'Received, not yet reviewed','triage':'Under review',
+              'confirmed':'Confirmed — correction in progress','rejected':'Reviewed, no change made',
+              'fixed':'Corrected'}[report.moderation_status] }}</dd></div>
+    <div class="cand__field"><dt>Notes</dt>
+      <dd>{{ report.resolution_note or 'No notes have been published yet.' }}</dd></div>
+  </dl>
+</div>
+<p>Reports about deadlines, locations, and eligibility should also go to your election office, who
+can act immediately.</p>
+<p><a href="/help">Back to help</a></p>
+{% endblock %}

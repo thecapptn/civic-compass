@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Confirm your jurisdictions — Civic Compass{% endblock %}
+{% block content %}
+<h1>Confirm where you vote</h1>
+
+{% if not had_input %}
+  <div class="nodata" role="note">
+    <p class="nodata__msg">Enter a ZIP code, or a city and state, to continue.</p>
+  </div>
+  <p><a class="btn btn--quiet" href="/">Back to the start</a></p>
+{% elif match.confidence == 'none' %}
+  <div class="nodata" role="note">
+    <p class="nodata__msg">{{ match.explanation }}</p>
+  </div>
+  <p>Your election office can tell you exactly which jurisdictions apply to your address.</p>
+  <ul class="orlist">
+    <li><a href="https://www.canivote.org" rel="noopener">Find your election office (CanIVote.org)</a></li>
+    <li><a href="https://www.usa.gov/state-election-office" rel="noopener">State and local election offices (USA.gov)</a></li>
+    <li><a href="/">Try a different location</a></li>
+  </ul>
+{% else %}
+  <p class="lede">{{ match.explanation }}</p>
+  <ul class="elist">
+    {% for j in match.jurisdictions %}
+    <li class="elec">
+      <p class="elec__date">{{ j.type | capitalize }}</p>
+      <h2 class="elec__name" style="margin-top:0"><a href="/confirm?j={{ j.id }}">{{ j.name }}</a></h2>
+      <p class="elec__meta">Administered by {{ j.office_name }}.</p>
+      <p><a class="btn" href="/confirm?j={{ j.id }}">Use {{ j.name }}</a></p>
+    </li>
+    {% endfor %}
+  </ul>
+  <p><a href="/">None of these are right — try a different location</a></p>
+{% endif %}
+{% endblock %}

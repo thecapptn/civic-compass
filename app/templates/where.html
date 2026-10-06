@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import location_card, no_data, office_referral %}
+{% block title %}Where to vote — {{ election.name }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>Where to vote</h1>
+<p class="lede">{{ election.name }} · {{ election.date_display }}. These are listed as text with
+copyable addresses. No map is needed to use this page.</p>
+
+{% for g in groups %}
+<section aria-labelledby="loc-{{ g.type }}">
+  <h2 id="loc-{{ g.type }}">{{ g.label }}</h2>
+  {% if g['items'] %}
+    <ul class="loclist">
+      {% for loc in g['items'] %}{{ location_card(loc) }}{% endfor %}
+    </ul>
+  {% else %}
+    {{ no_data('We do not have ' ~ g.label | lower ~ ' on file for this election in your
+       jurisdictions. That does not mean there are none.', chain[0] if chain else None) }}
+  {% endif %}
+</section>
+{% endfor %}
+
+<h2>Before you travel</h2>
+<p>Locations and hours change, sometimes in the final days before an election. The date under each
+entry shows when we last confirmed it. If that date is not recent, or if anything here does not
+match what your election office says, the election office is correct.</p>
+
+{% if chain %}{{ office_referral(chain[0]) }}{% endif %}
+{% endblock %}

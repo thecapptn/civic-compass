@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Operations console — Civic Compass{% endblock %}
+{% block content %}
+<h1>Operations console</h1>
+<p class="lede">This console is for staff who verify and correct election data. It needs an access
+token.</p>
+<form method="get" action="/ops">
+  <div class="field">
+    <label for="token">Access token</label>
+    <input type="text" id="token" name="token">
+  </div>
+  <button class="btn" type="submit">Open console</button>
+</form>
+{% endblock %}

@@ -1,0 +1,413 @@
+/* Civic Compass
+   Visual thesis: this should read like a well-made public record, not a campaign or a startup.
+   The signature element is the source strip — a monospace provenance receipt printed under every
+   fact. Provenance is the product, so provenance gets the distinctive typographic treatment and
+   everything else stays quiet.
+
+   No party colours are used anywhere. Status is always carried by a word; colour only ever
+   reinforces text that already says the same thing. */
+
+:root {
+  --ink:        #12171d;
+  --ink-2:      #3a4550;
+  --paper:      #eef1f4;
+  --card:       #ffffff;
+  --civic:      #14507a;
+  --civic-dark: #0e3b5c;
+  --rule:       #cfd7de;
+  --rule-soft:  #e4e9ed;
+  --verified:   #1a6b45;
+  --caution:    #8a5200;
+  --alert:      #a32626;
+  --mono-bg:    #f6f8fa;
+
+  --display: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --body: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --step: 1.5rem;
+  --wrap: 46rem;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.wrap { width: min(var(--wrap), 100% - 2rem); margin-inline: auto; }
+
+/* ---------- focus and skip ---------- */
+
+:focus-visible {
+  outline: 3px solid var(--civic);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skip {
+  position: absolute; left: -9999px; top: 0;
+  background: var(--ink); color: #fff; padding: .75rem 1rem; z-index: 100;
+}
+.skip:focus { left: 0; }
+
+/* ---------- demo bar ---------- */
+
+.demobar {
+  background: #2b2118; color: #fff;
+  border-bottom: 3px solid var(--caution);
+}
+.demobar p {
+  width: min(var(--wrap), 100% - 2rem); margin-inline: auto;
+  padding: .7rem 0; font-size: .875rem; line-height: 1.45;
+}
+.demobar a { color: #ffd9a0; }
+
+/* ---------- header ---------- */
+
+.site { background: var(--card); border-bottom: 1px solid var(--rule); }
+.site__inner { display: flex; align-items: center; padding: 1rem 0; }
+
+.brand { display: flex; gap: .75rem; align-items: center; text-decoration: none; color: inherit; }
+.brand__mark { color: var(--civic); display: flex; }
+.brand__name {
+  display: block; font-family: var(--display); font-size: 1.25rem;
+  letter-spacing: -.01em; line-height: 1.1;
+}
+.brand__tag {
+  display: block; font-size: .75rem; color: var(--ink-2);
+  letter-spacing: .04em; text-transform: uppercase;
+}
+
+.nav { background: var(--card); border-top: 1px solid var(--rule-soft); }
+.nav__list {
+  display: flex; flex-wrap: wrap; gap: .25rem;
+  list-style: none; margin: 0; padding: 0;
+}
+.nav__list a {
+  display: block; padding: .7rem .85rem; min-height: 44px;
+  font-size: .9375rem; color: var(--ink-2); text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+.nav__list a:hover, .nav__list a:focus-visible {
+  color: var(--civic-dark); border-bottom-color: var(--civic);
+}
+
+/* ---------- jurisdiction band ---------- */
+
+.jband { background: var(--civic-dark); color: #fff; }
+.jband__text {
+  margin: 0; padding: .6rem 0; font-size: .875rem;
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline;
+}
+.jband__label { text-transform: uppercase; letter-spacing: .06em; font-size: .6875rem; opacity: .85; }
+.jband__j {
+  font-family: var(--mono); font-size: .8125rem;
+  background: rgba(255,255,255,.14); padding: .1rem .45rem; border-radius: 2px;
+}
+.jband__change { color: #cfe6f7; margin-left: auto; }
+
+/* ---------- typography ---------- */
+
+main { padding: 2rem 0 3rem; }
+
+h1 {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.75rem, 5vw, 2.5rem); line-height: 1.15;
+  letter-spacing: -.015em; margin: 0 0 .5rem;
+}
+h2 {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(1.3rem, 3.4vw, 1.6rem); line-height: 1.25;
+  margin: 2.5rem 0 .75rem;
+}
+h3 { font-size: 1.125rem; line-height: 1.3; margin: 1.75rem 0 .5rem; }
+h4 { font-size: 1rem; margin: 0 0 .35rem; }
+h5 { font-size: .9375rem; margin: 1.1rem 0 .35rem; }
+h6 { font-size: .875rem; margin: 0 0 .5rem; }
+
+p { margin: 0 0 .9rem; }
+a { color: var(--civic-dark); text-underline-offset: .16em; }
+a:hover { color: var(--civic); }
+
+.lede { font-size: 1.0625rem; color: var(--ink-2); max-width: 38rem; }
+
+/* ---------- cards ---------- */
+
+.card {
+  background: var(--card); border: 1px solid var(--rule);
+  border-radius: 3px; padding: 1.25rem; margin-bottom: var(--step);
+}
+
+/* ---------- the source strip: signature element ---------- */
+
+.srcstrip {
+  margin-top: 1rem; padding: .7rem .85rem;
+  background: var(--mono-bg);
+  border: 1px solid var(--rule-soft);
+  border-left: 3px solid var(--civic);
+  font-family: var(--mono); font-size: .75rem; line-height: 1.5;
+}
+.srcstrip__grid { margin: 0; display: flex; flex-wrap: wrap; gap: .15rem 1.25rem; }
+.srcstrip__pair { display: flex; gap: .4rem; }
+.srcstrip__pair dt {
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--ink-2); font-size: .6875rem; padding-top: .05rem;
+}
+.srcstrip__pair dd { margin: 0; color: var(--ink); }
+.srcstrip__note {
+  margin: .4rem 0 0; font-family: var(--body); font-size: .8125rem; color: var(--ink-2);
+}
+.srcstrip__report { display: inline-block; margin-top: .35rem; font-size: .75rem; }
+
+/* ---------- status ---------- */
+
+.status {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-size: .8125rem; font-weight: 600;
+  padding: .15rem .5rem; border: 1px solid currentColor; border-radius: 2px;
+}
+.status__dot { width: .45rem; height: .45rem; border-radius: 50%; background: currentColor; }
+.status--official  { color: var(--verified); }
+.status--verified  { color: var(--verified); }
+.status--certified { color: var(--verified); }
+.status--aggregated{ color: var(--ink-2); }
+.status--pending   { color: var(--caution); }
+.status--historical{ color: var(--ink-2); }
+.status--unofficial{ color: var(--caution); }
+.status--conflicting { color: var(--alert); }
+.status--demo      { color: var(--caution); }
+
+/* ---------- notices ---------- */
+
+.nodata, .coverage, .conflict, .loc__warn, .cand__withdrawn {
+  border: 1px solid var(--rule); border-left: 3px solid var(--caution);
+  background: #fdfaf5; padding: .8rem .9rem; margin: 1rem 0;
+  font-size: .9375rem;
+}
+.conflict { border-left-color: var(--alert); background: #fdf6f6; }
+.conflict ul { margin: .5rem 0; padding-left: 1.2rem; }
+.nodata p:last-child, .coverage p:last-child, .conflict p:last-child { margin-bottom: 0; }
+
+.referral {
+  background: var(--card); border: 1px solid var(--rule);
+  border-top: 3px solid var(--civic); padding: 1.1rem; margin: var(--step) 0;
+}
+.referral__h { margin-top: 0; font-family: var(--display); font-weight: 400; font-size: 1.15rem; }
+.referral__list { list-style: none; margin: 0; padding: 0; font-size: .9375rem; }
+.referral__list li { padding: .3rem 0; border-bottom: 1px solid var(--rule-soft); }
+.referral__list li:last-child { border-bottom: 0; }
+
+/* ---------- home ---------- */
+
+.finder {
+  background: var(--card); border: 1px solid var(--rule);
+  border-radius: 3px; padding: 1.5rem; margin: 1.5rem 0;
+}
+.field { margin-bottom: 1rem; }
+.field label { display: block; font-weight: 600; margin-bottom: .3rem; }
+.field .hint { font-size: .875rem; color: var(--ink-2); margin: .15rem 0 .45rem; }
+input[type="text"], input[type="email"], select, textarea {
+  width: 100%; padding: .65rem .7rem; min-height: 44px;
+  font: inherit; color: var(--ink);
+  background: #fff; border: 1px solid #8d99a6; border-radius: 2px;
+}
+textarea { min-height: 8rem; }
+
+.btn {
+  display: inline-block; padding: .7rem 1.1rem; min-height: 44px;
+  font: inherit; font-weight: 600; text-align: center; text-decoration: none;
+  color: #fff; background: var(--civic-dark);
+  border: 1px solid var(--civic-dark); border-radius: 2px; cursor: pointer;
+}
+.btn:hover { background: var(--civic); color: #fff; }
+.btn--quiet { color: var(--civic-dark); background: #fff; }
+.btn--quiet:hover { background: var(--mono-bg); color: var(--civic-dark); }
+.btnrow { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+
+.orlist { list-style: none; margin: 0; padding: 0; }
+.orlist li { border-bottom: 1px solid var(--rule-soft); }
+.orlist li:last-child { border-bottom: 0; }
+.orlist a { display: block; padding: .75rem .25rem; min-height: 44px; }
+
+/* ---------- election list ---------- */
+
+.filters { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 1.5rem; padding: 0; list-style: none; }
+.filters a {
+  display: block; padding: .5rem .75rem; min-height: 44px; line-height: 1.7;
+  font-size: .875rem; text-decoration: none; color: var(--ink-2);
+  background: var(--card); border: 1px solid var(--rule); border-radius: 2px;
+}
+.filters a[aria-current="true"] {
+  background: var(--civic-dark); color: #fff; border-color: var(--civic-dark);
+}
+
+.elist { list-style: none; margin: 0; padding: 0; }
+.elec {
+  background: var(--card); border: 1px solid var(--rule);
+  border-left: 3px solid var(--civic); border-radius: 3px;
+  padding: 1.15rem; margin-bottom: 1rem;
+}
+.elec__date {
+  font-family: var(--mono); font-size: .75rem; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--ink-2); margin: 0 0 .25rem;
+}
+.elec__name { font-family: var(--display); font-weight: 400; font-size: 1.25rem; margin: 0 0 .4rem; }
+.elec__name a { text-decoration: none; }
+.elec__name a:hover { text-decoration: underline; }
+.elec__meta { font-size: .875rem; color: var(--ink-2); margin: 0 0 .5rem; }
+
+/* ---------- deadlines ---------- */
+
+.dllist { list-style: none; margin: 0; padding: 0; }
+.dl { background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+      padding: 1rem; margin-bottom: 1rem; }
+.dl__label { font-size: 1.0625rem; }
+.dl__when { font-family: var(--mono); font-size: .875rem; margin: 0 0 .2rem; }
+.dl__count { font-size: .875rem; color: var(--ink-2); margin: 0 0 .4rem; }
+.dl__scope { font-size: .875rem; color: var(--ink-2); }
+
+/* ---------- ballot ---------- */
+
+.contest {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+  padding: 1.15rem; margin-bottom: var(--step);
+}
+.contest__title { margin-top: 0; font-size: 1.1875rem; }
+.contest__meta { font-size: .875rem; color: var(--ink-2); margin: 0 0 .5rem; }
+.why { font-size: .875rem; margin-bottom: .75rem; }
+.why summary { cursor: pointer; color: var(--civic-dark); padding: .35rem 0; }
+.orderrule {
+  font-size: .8125rem; color: var(--ink-2);
+  border-top: 1px solid var(--rule-soft); padding-top: .6rem;
+}
+
+.candlist { list-style: none; margin: 0; padding: 0; }
+.cand { margin-bottom: 1rem; }
+/* Identical geometry for every entry. There is no modifier class anywhere in the codebase
+   that alters a candidate card, and there must never be one. */
+.cand__body {
+  border: 1px solid var(--rule); border-radius: 3px;
+  padding: 1rem; background: var(--card);
+}
+.cand__name { font-family: var(--display); font-weight: 400; font-size: 1.1875rem; margin: 0 0 .6rem; }
+.cand__fields { margin: 0; }
+.cand__field { padding: .4rem 0; border-bottom: 1px solid var(--rule-soft); }
+.cand__field:last-child { border-bottom: 0; }
+.cand__field dt {
+  font-size: .6875rem; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--ink-2); font-family: var(--mono);
+}
+.cand__field dd { margin: .1rem 0 0; font-size: .9375rem; overflow-wrap: anywhere; }
+.cand__attrib { display: block; font-size: .8125rem; color: var(--ink-2); margin-top: .2rem; }
+.cand__questh { margin-bottom: .2rem; }
+.cand__questnote { font-size: .8125rem; color: var(--ink-2); }
+
+/* ---------- measures ---------- */
+
+.measure__title { font-family: var(--display); font-weight: 400; font-size: 1.1875rem; }
+.measure__section { margin: 1rem 0; }
+.measure__h {
+  font-size: .6875rem; text-transform: uppercase; letter-spacing: .07em;
+  font-family: var(--mono); color: var(--ink-2); margin: 0 0 .3rem;
+}
+.measure__text {
+  margin: 0; padding: .75rem .9rem; background: var(--mono-bg);
+  border-left: 3px solid var(--rule); font-size: .9375rem;
+}
+.args { display: grid; gap: 1rem; }
+.args__col { border: 1px solid var(--rule); padding: .85rem; background: var(--card); }
+.args__h { font-size: .9375rem; margin: 0 0 .5rem; }
+.args__none { font-size: .875rem; color: var(--ink-2); margin: 0; }
+@media (min-width: 40rem) { .args { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- locations ---------- */
+
+.loclist { list-style: none; margin: 0; padding: 0; }
+.loc { background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
+       padding: 1rem; margin-bottom: 1rem; }
+.loc__name { font-size: 1.0625rem; }
+.loc__addr { font-family: var(--mono); font-size: .875rem; margin: 0 0 .5rem; }
+.copybtn {
+  font: inherit; font-size: .8125rem; padding: .35rem .6rem; min-height: 32px;
+  background: #fff; border: 1px solid var(--rule); border-radius: 2px;
+  color: var(--civic-dark); cursor: pointer; margin-left: .4rem;
+}
+
+/* ---------- results ---------- */
+
+.rescontest { background: var(--card); border: 1px solid var(--rule);
+              padding: 1.1rem; margin-bottom: var(--step); }
+table.res { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+table.res th, table.res td {
+  text-align: left; padding: .5rem .4rem; border-bottom: 1px solid var(--rule-soft);
+}
+table.res th { font-size: .6875rem; text-transform: uppercase; letter-spacing: .07em;
+               font-family: var(--mono); color: var(--ink-2); }
+table.res td.num { text-align: right; font-family: var(--mono); }
+
+/* ---------- coverage matrix ---------- */
+
+.matrixwrap { overflow-x: auto; }
+table.matrix { border-collapse: collapse; font-size: .8125rem; min-width: 42rem; }
+table.matrix th, table.matrix td {
+  padding: .45rem .5rem; border: 1px solid var(--rule); text-align: left;
+}
+table.matrix th { background: var(--mono-bg); font-family: var(--mono);
+                  font-size: .6875rem; text-transform: uppercase; letter-spacing: .06em; }
+
+/* ---------- checklist ---------- */
+
+.checkitem { display: flex; gap: .6rem; align-items: flex-start; }
+.checkitem input { margin-top: .55rem; width: 1.15rem; height: 1.15rem; }
+
+/* ---------- footer ---------- */
+
+.site__foot {
+  background: var(--card); border-top: 1px solid var(--rule);
+  padding: 2rem 0 3rem; font-size: .9375rem; color: var(--ink-2);
+}
+.foot__h { font-size: 1.0625rem; margin-top: 0; font-family: var(--body); font-weight: 600; }
+.foot__links { list-style: none; margin: 1rem 0; padding: 0; display: grid; gap: .35rem; }
+.foot__privacy { font-size: .875rem; }
+
+/* ---------- ops ---------- */
+
+.ops table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+.ops th, .ops td { text-align: left; padding: .45rem .4rem; border-bottom: 1px solid var(--rule-soft);
+                   vertical-align: top; }
+.ops code { font-family: var(--mono); font-size: .75rem; }
+
+/* ---------- preferences ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important; transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root { --rule: #55606c; --rule-soft: #8d99a6; --ink-2: #262f38; }
+}
+
+@media print {
+  .demobar { background: none; color: #000; border-bottom: 2px solid #000; }
+  .nav, .site__foot, .filters, .btnrow, .srcstrip__report, .skip, .jband__change { display: none; }
+  body { background: #fff; font-size: 11pt; }
+  .card, .dl, .contest, .cand__body, .loc, .referral { border: 1px solid #999; break-inside: avoid; }
+  a::after { content: " (" attr(href) ")"; font-size: 9pt; word-break: break-all; }
+  a[href^="/"]::after { content: ""; }
+}
+
+/* The list inside the existing .why disclosure, used when an election reaches the reader through
+   more than one of their jurisdictions. */
+.why__list { margin: .2rem 0 .4rem 1.1rem; padding: 0; color: var(--slate); }
+.why__list li { margin: .2rem 0; }

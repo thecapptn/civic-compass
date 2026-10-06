@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_macros.html" import measure_block, source_strip, office_referral %}
+{% block title %}{{ contest.office_name }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>{{ contest.office_name }}</h1>
+<p class="lede">{{ contest.election.name }} · {{ contest.election.date_display }} ·
+  {{ contest.jurisdiction.name }}</p>
+<p><a href="/ballot/{{ contest.election.id }}?j={{ jid }}">Back to the ballot preview</a></p>
+
+<details class="why" open>
+  <summary>Why am I seeing this?</summary>
+  <p>{{ contest.why_relevant }}</p>
+</details>
+
+<div class="card">
+  {% if contest.measure %}{{ measure_block(contest.measure, hl=2) }}{% endif %}
+</div>
+
+<h2>About this information</h2>
+<p>The section headed “What the measure says” is the ballot text as published by the election office.
+Arguments were submitted by others and are reproduced as submitted. Civic Compass does not write,
+check, or take a position on them, and gives arguments on each side the same treatment.</p>
+
+{{ source_strip(contest.source, contest.status, 'contest', contest.id) }}
+{% if contest.jurisdiction %}{{ office_referral(contest.jurisdiction) }}{% endif %}
+{% endblock %}

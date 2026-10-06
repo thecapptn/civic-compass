@@ -1,0 +1,13 @@
+services:
+  civic-compass:
+    build: .
+    container_name: civic-compass
+    restart: unless-stopped
+    ports:
+      - "5021:5021"
+    volumes:
+      - ./data:/srv/data
+    environment:
+      # Change this before exposing the operations console to anything but localhost.
+      CIVIC_COMPASS_OPS_TOKEN: ${CIVIC_COMPASS_OPS_TOKEN:-demo-ops-token}
+      CIVIC_COMPASS_DB: /srv/data/civic_compass.sqlite3

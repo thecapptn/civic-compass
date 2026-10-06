@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Civic Compass — find the elections that apply to you{% endblock %}
+{% block content %}
+<h1>Know what is on your ballot, and check it with your election office.</h1>
+<p class="lede">Enter where you are registered to vote. We will show the elections that apply to that
+place, the deadlines that apply to you, where you can vote, and what appears on your ballot — with a
+named source and a date for every fact.</p>
+
+<form class="finder" method="post" action="/resolve">
+  <div class="field">
+    <label for="location">Where are you registered to vote?</label>
+    <p class="hint" id="location-hint">A ZIP code, or a city and state. We do not store what you
+      enter here, and it never appears in a web address.</p>
+    <input type="text" id="location" name="location" autocomplete="postal-code"
+           aria-describedby="location-hint" placeholder="">
+  </div>
+  <button class="btn" type="submit">Find my elections</button>
+</form>
+
+<h2>Or start another way</h2>
+<div class="card">
+  <h3 id="bystate">Browse by state</h3>
+  <ul class="orlist" aria-labelledby="bystate">
+    {% for s in states %}
+    <li><a href="/confirm?j={{ s.id }}">{{ s.name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h3>If you are not sure where to begin</h3>
+  <ul class="orlist">
+    <li><a href="/help">How voting works, in plain language</a></li>
+    <li><a href="https://www.fvap.gov/" rel="noopener">I am military or overseas (FVAP)</a></li>
+    <li><a href="https://www.canivote.org" rel="noopener">Find my election office (CanIVote.org)</a></li>
+    <li><a href="/methodology">What we know, and what we do not</a></li>
+  </ul>
+</div>
+{% endblock %}

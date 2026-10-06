@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Operations console — Civic Compass{% endblock %}
+{% block content %}
+<div class="ops">
+<h1>Operations console</h1>
+<p class="lede">Source health, stale records, conflicts, corrections, and the audit trail. Every
+change made here is versioned with its previous value.</p>
+
+<h2>Stale records ({{ stale | length }})</h2>
+<p>Records whose verification has expired for their class and this election's proximity. These are
+being served to the public as “Not yet confirmed.”</p>
+{% if stale %}
+<table>
+  <thead><tr><th scope="col">Record</th><th scope="col">Class</th><th scope="col">Source</th>
+    <th scope="col">Last verified</th></tr></thead>
+  <tbody>
+    {% for s in stale %}
+    <tr><th scope="row"><code>{{ s.table }}/{{ s.id }}</code><br>{{ s.name }}</th>
+        <td>{{ s.data_class }}</td>
+        <td><a href="{{ s.source.source_url }}" rel="noopener">{{ s.source.organization }}</a></td>
+        <td>{{ s.source.last_verified_at[:10] }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}<p>No stale records.</p>{% endif %}
+
+<h2>Conflicts ({{ conflicts | length }})</h2>
+<p>Two tier-one authorities publishing different values for the same fact. These require a steward,
+not an automated resolution.</p>
+{% if conflicts %}
+<table>
+  <thead><tr><th scope="col">Election</th><th scope="col">Action</th><th scope="col">Values</th></tr></thead>
+  <tbody>
+    {% for c in conflicts %}
+    <tr><th scope="row"><code>{{ c.election_id }}</code></th>
+        <td>{{ c.action }}</td>
+        <td>{% for o in c['options'] %}{{ o.display }} — {{ o.source.organization }}<br>{% endfor %}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}<p>No conflicts.</p>{% endif %}
+
+<h2>Candidate withdrawals ({{ withdrawals | length }})</h2>
+{% if withdrawals %}
+<table>
+  <thead><tr><th scope="col">Candidate</th><th scope="col">Contest</th><th scope="col">Status</th></tr></thead>
+  <tbody>
+    {% for w in withdrawals %}
+    <tr><th scope="row">{{ w.ballot_name }}</th><td>{{ w.office_name }}</td>
+        <td>{{ w.filing_status }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p>Withdrawn entries stay on the public ballot preview, marked. They are never deleted.</p>
+{% else %}<p>None.</p>{% endif %}
+
+<h2>Source health</h2>
+<table>
+  <thead><tr><th scope="col">Source</th><th scope="col">Tier</th><th scope="col">Last verified</th>
+    <th scope="col">Age</th><th scope="col">Failures</th><th scope="col">State</th></tr></thead>
+  <tbody>
+    {% for s in health %}
+    <tr><th scope="row">{{ s.organization }}</th><td>{{ s.trust_tier }}</td>
+        <td>{{ s.last_verified_at[:10] }}</td><td>{{ s.age_days }}d</td>
+        <td>{{ s.consecutive_failures or 0 }}</td>
+        <td>{{ 'ATTENTION' if s.alert else 'ok' }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Correction queue ({{ reports | length }})</h2>
+{% if reports %}
+{% for r in reports %}
+<div class="card">
+  <h3 style="margin-top:0"><code>{{ r.id }}</code> — {{ r.issue_type | replace('_',' ') }}</h3>
+  <p style="font-size:.875rem;color:var(--ink-2)">{{ r.submitted_at[:16] | replace('T',' ') }} UTC
+    {% if r.entity_id %}· <code>{{ r.entity_table }}/{{ r.entity_id }}</code>{% endif %}
+    · status: {{ r.moderation_status }}</p>
+  <p>{{ r.body_text }}</p>
+  <form method="post" action="/ops/report/{{ r.id }}">
+    <input type="hidden" name="token" value="{{ token }}">
+    <div class="field">
+      <label for="status-{{ r.id }}">Set status</label>
+      <select id="status-{{ r.id }}" name="status">
+        {% for s in ['new','triage','confirmed','rejected','fixed'] %}
+        <option value="{{ s }}" {% if r.moderation_status == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="note-{{ r.id }}">Public resolution note</label>
+      <input type="text" id="note-{{ r.id }}" name="note" value="{{ r.resolution_note or '' }}">
+    </div>
+    <button class="btn btn--quiet" type="submit">Update</button>
+  </form>
+</div>
+{% endfor %}
+{% else %}<p>No reports.</p>{% endif %}
+
+<h2>Audit log (most recent 50)</h2>
+<table>
+  <thead><tr><th scope="col">When</th><th scope="col">Actor</th><th scope="col">Action</th>
+    <th scope="col">Record</th><th scope="col">Note</th></tr></thead>
+  <tbody>
+    {% for a in audit %}
+    <tr><td>{{ a.at[:16] | replace('T',' ') }}</td><td>{{ a.actor }}</td><td>{{ a.action }}</td>
+        <td>{% if a.entity_id %}<code>{{ a.entity_table }}/{{ a.entity_id }}</code>{% endif %}</td>
+        <td>{{ a.note or '' }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

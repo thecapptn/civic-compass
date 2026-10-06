@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import office_referral %}
+{% block title %}{{ chain[0].name }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>{{ chain[0].name }}</h1>
+<p class="lede">Your ballot is assembled from every jurisdiction your address sits inside. These are
+the ones we will use. Confirm they are right before you rely on anything that follows.</p>
+
+<div class="card">
+  <h2 id="jlist" style="margin-top:0">Jurisdictions we will use</h2>
+  <ul class="orlist" aria-labelledby="jlist">
+    {% for j in chain %}
+    <li style="padding:.6rem .25rem">
+      <strong>{{ j.name }}</strong><br>
+      <span style="font-size:.875rem;color:var(--ink-2)">{{ j.type | capitalize }} ·
+        administered by {{ j.office_name }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="btnrow">
+  <a class="btn" href="/elections?j={{ jid }}">See upcoming elections</a>
+  <a class="btn btn--quiet" href="/rules?j={{ jid }}">Voting rules here</a>
+  <a class="btn btn--quiet" href="/">Change location</a>
+</div>
+
+{{ office_referral(chain[0]) }}
+{% endblock %}

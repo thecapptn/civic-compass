@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Report a problem — Civic Compass{% endblock %}
+{% block content %}
+<h1>Report a problem</h1>
+
+{% if submitted %}
+<div class="card" role="status">
+  <h2 style="margin-top:0">Report received</h2>
+  <p>Your reference number is <strong><code>{{ submitted }}</code></strong>. Keep it if you want to
+  check what happened.</p>
+  <p><a class="btn btn--quiet" href="/report/{{ submitted }}">Check the status of this report</a></p>
+  <p style="font-size:.875rem;color:var(--ink-2)">If this is about a deadline, a polling place, or
+  your eligibility, do not wait for us. Contact your election office, who can answer straight
+  away.</p>
+</div>
+{% else %}
+<p class="lede">Tell us what looks wrong. You do not need an account, and you do not need to give us
+your contact details.</p>
+
+<form method="post" action="/report">
+  <input type="hidden" name="entity_table" value="{{ entity_table }}">
+  <input type="hidden" name="entity_id" value="{{ entity_id }}">
+
+  {% if entity_id %}
+  <p>This report will be attached to record <code>{{ entity_table }}/{{ entity_id }}</code>.</p>
+  {% endif %}
+
+  <div class="field">
+    <label for="issue_type">What kind of problem is it?</label>
+    <select id="issue_type" name="issue_type">
+      <option value="wrong_date">A date or deadline looks wrong</option>
+      <option value="wrong_location">A voting location looks wrong</option>
+      <option value="missing_contest">A contest or candidate is missing</option>
+      <option value="wrong_candidate">A candidate or measure record looks wrong</option>
+      <option value="wrong_rule">A rule looks wrong</option>
+      <option value="accessibility">Something is hard to use or unreadable</option>
+      <option value="neutrality">Something reads as taking a side</option>
+      <option value="other">Something else</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="body_text">What did you see?</label>
+    <p class="hint" id="body-hint">If you know the correct information and where it came from, that
+      helps us confirm it faster.</p>
+    <textarea id="body_text" name="body_text" required aria-describedby="body-hint"></textarea>
+  </div>
+
+  <div class="field">
+    <label for="contact_optional">Your email (optional)</label>
+    <p class="hint" id="contact-hint">Only if you want a reply. We delete it once the report is
+      resolved.</p>
+    <input type="email" id="contact_optional" name="contact_optional"
+           aria-describedby="contact-hint">
+  </div>
+
+  <button class="btn" type="submit">Send report</button>
+</form>
+{% endif %}
+{% endblock %}

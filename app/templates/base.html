@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Civic Compass{% endblock %}</title>
+  <meta name="description" content="Find the elections that apply to your address, the deadlines that
+    apply to you, and where to vote — with a source for every fact.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to main content</a>
+
+<div class="demobar" role="note">
+  <p><strong>Demonstration data.</strong> Every election, date, contest, candidate, measure, location
+  and result on this site is invented for a demonstration. It is not real election information. For
+  real information, contact your election office or visit
+  <a href="https://www.canivote.org" rel="noopener">CanIVote.org</a>.</p>
+</div>
+
+<header class="site">
+  <div class="wrap site__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="24" height="24" focusable="false"><circle cx="12" cy="12"
+          r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 4v16M4 12h16"
+          stroke="currentColor" stroke-width="1.1" opacity=".45"/><path d="M12 7.5 14.2 12 12 16.5
+          9.8 12Z" fill="currentColor"/></svg>
+      </span>
+      <span class="brand__text">
+        <span class="brand__name">Civic Compass</span>
+        <span class="brand__tag">Election information, with its sources</span>
+      </span>
+    </a>
+  </div>
+  <nav class="nav" aria-label="Main">
+    <div class="wrap">
+      <ul class="nav__list">
+        <li><a href="/">Home</a></li>
+        <li><a href="/elections{% if jid %}?j={{ jid }}{% endif %}">Elections</a></li>
+        <li><a href="/rules{% if jid %}?j={{ jid }}{% endif %}">Voting rules</a></li>
+        <li><a href="/help{% if jid %}?j={{ jid }}{% endif %}">Help</a></li>
+        <li><a href="/methodology">Methodology</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+{% block jurisdiction_band %}
+{% if chain %}
+<div class="jband">
+  <div class="wrap">
+    <p class="jband__text">
+      <span class="jband__label">Showing information for</span>
+      {% for j in chain %}<span class="jband__j">{{ j.name }}</span>{% endfor %}
+      <a class="jband__change" href="/">Change location</a>
+    </p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+<main id="main" class="wrap">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site__foot">
+  <div class="wrap">
+    <h2 class="foot__h">About this information</h2>
+    <p>Civic Compass does not endorse, rank, or recommend any candidate, party, or ballot position,
+       and does not accept advertising or paid placement. Your election office is the authority for
+       everything shown here.</p>
+    <ul class="foot__links">
+      <li><a href="/methodology">How we source and verify</a></li>
+      <li><a href="/report">Report a problem</a></li>
+      <li><a href="https://www.usa.gov/how-to-vote" rel="noopener">USA.gov: how to vote</a></li>
+      <li><a href="https://www.eac.gov/voting-accessibility" rel="noopener">EAC: voting accessibility</a></li>
+      <li><a href="https://www.fvap.gov/" rel="noopener">FVAP: military and overseas voting</a></li>
+      <li><a href="https://www.nass.org/initiatives/trustedinfo" rel="noopener">NASS TrustedInfo</a></li>
+    </ul>
+    <p class="foot__privacy">We do not ask you to create an account, we do not store the address you
+       enter, and we do not infer or record anything about your political preferences.</p>
+  </div>
+</footer>
+
+<script src="/static/js/app.js" defer></script>
+</body>
+</html>

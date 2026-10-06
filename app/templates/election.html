@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_word, source_strip, deadline_row, office_referral, no_data %}
+{% block title %}{{ election.name }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>{{ election.name }}</h1>
+<p class="lede">{{ election.date_display }} ·
+  {{ election.jurisdictions[0].name if election.jurisdictions else '' }} ·
+  {% if election.is_past %}This election has passed.
+  {% elif election.days_away == 0 %}Today.
+  {% else %}{{ election.days_away }} days away.{% endif %}
+</p>
+<p>{{ status_word(election.status) }}</p>
+{{ source_strip(election.source, election.status, 'election', election.id) }}
+
+{% if deadlines['conflicts'] %}
+<div class="conflict" role="note">
+  <h2 style="margin-top:0;font-size:1.0625rem">Sources disagree about this election</h2>
+  <p>For {{ deadlines['conflicts'] | length }} deadline in this election, two election authorities
+  publish different information. Both are shown on the deadline below. Check with your election
+  office before you act on either one.</p>
+</div>
+{% endif %}
+
+<h2>Dates and deadlines</h2>
+{% if deadlines['items'] %}
+<ul class="dllist">
+  {% for d in deadlines['items'] %}{{ deadline_row(d) }}{% endfor %}
+</ul>
+<p><a class="btn" href="/plan/{{ election.id }}?j={{ jid }}">Build a voting plan for this election</a></p>
+{% else %}
+  {{ no_data('We do not yet have deadlines on file for this election.', chain[0] if chain else None) }}
+{% endif %}
+
+<h2>What is on the ballot</h2>
+{% if contest_count %}
+<p>{{ contest_count }} contest{{ 's' if contest_count != 1 }} found for your jurisdictions.</p>
+<p><a class="btn btn--quiet" href="/ballot/{{ election.id }}?j={{ jid }}">Open the ballot preview</a></p>
+{% else %}
+  {{ no_data('We do not yet have contest data for this election in your jurisdictions.',
+     chain[0] if chain else None) }}
+{% endif %}
+
+<h2>Where to vote</h2>
+{% set loc_total = locations | map(attribute='items') | map('length') | sum %}
+{% if loc_total %}
+<p>{{ loc_total }} location{{ 's' if loc_total != 1 }} on file, in
+  {{ locations | selectattr('items') | list | length }} categories.</p>
+<p><a class="btn btn--quiet" href="/where/{{ election.id }}?j={{ jid }}">See voting locations</a></p>
+{% else %}
+  {{ no_data('We do not yet have voting locations on file for this election.',
+     chain[0] if chain else None) }}
+{% endif %}
+
+{% if election.is_past %}
+<h2>Results</h2>
+<p><a class="btn btn--quiet" href="/results/{{ election.id }}?j={{ jid }}">See reported results</a></p>
+{% endif %}
+
+<h2>Who administers this election</h2>
+{% for j in election.jurisdictions %}{{ office_referral(j, 'Election office: ' ~ j.name) }}{% endfor %}
+{% endblock %}

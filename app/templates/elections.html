@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_word, office_referral, no_data %}
+{% block title %}Elections — Civic Compass{% endblock %}
+{% block content %}
+<h1>Upcoming elections</h1>
+
+{% if not jid %}
+  <p class="lede">Choose a location first so we can show only the elections that apply to it.</p>
+  <p><a class="btn" href="/">Find my elections</a></p>
+{% else %}
+  <p class="lede">Elections that include at least one of your jurisdictions. Local, special, and
+  school elections are listed alongside state and federal ones, because they are on the same ballot
+  for you.</p>
+
+  <ul class="filters">
+    {% for key, label in [('all','All elections'), ('upcoming','Upcoming'), ('30','Within 30 days'),
+                          ('registration_open','Registration open'),
+                          ('voting_now','Voting available now'), ('past','Past elections')] %}
+    <li><a href="/elections?j={{ jid }}&amp;window={{ key }}"
+           {% if window == key %}aria-current="true"{% endif %}>{{ label }}</a></li>
+    {% endfor %}
+  </ul>
+
+  {% if elections %}
+  <ul class="elist">
+    {% for e in elections %}
+    <li class="elec">
+      <p class="elec__date">{{ e.date_display }}</p>
+      <h2 class="elec__name" style="margin-top:0">
+        <a href="/elections/{{ e.id }}?j={{ jid }}">{{ e.name }}</a>
+      </h2>
+      <p class="elec__meta">
+        {{ {'general':'General election','primary':'Primary election','special':'Special election',
+            'runoff':'Runoff','recall':'Recall','municipal':'Municipal election',
+            'school':'School election','judicial':'Judicial election',
+            'measure_only':'Ballot measure election'}[e.type] }}
+        {% if e.is_past %}· This election has passed
+        {% elif e.days_away == 0 %}· Today
+        {% elif e.days_away == 1 %}· Tomorrow
+        {% else %}· {{ e.days_away }} days away{% endif %}
+      </p>
+      {% if e.relevance_notes | length > 1 %}
+      <details class="why">
+        <summary>Why am I seeing this?</summary>
+        <ul class="why__list">
+          {% for note in e.relevance_notes %}<li>{{ note }}</li>{% endfor %}
+        </ul>
+      </details>
+      {% elif e.relevance_note %}
+      <p class="elec__meta">{{ e.relevance_note }}</p>
+      {% endif %}
+      <p>{{ status_word(e.status) }}</p>
+      <div class="btnrow">
+        <a class="btn btn--quiet" href="/elections/{{ e.id }}?j={{ jid }}">Details</a>
+        {% if not e.is_past %}
+        <a class="btn btn--quiet" href="/plan/{{ e.id }}?j={{ jid }}">Build a plan</a>
+        <a class="btn btn--quiet" href="/ballot/{{ e.id }}?j={{ jid }}">Ballot preview</a>
+        {% else %}
+        <a class="btn btn--quiet" href="/results/{{ e.id }}?j={{ jid }}">Results</a>
+        {% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    {{ no_data('No elections match this filter for your jurisdictions. That may mean none are
+       scheduled, or that we do not yet have data for them.', primary) }}
+  {% endif %}
+
+  {% if coverage %}
+  <h2>What we cover for {{ primary.name if primary else 'this area' }}</h2>
+  <p>Coverage is published so you can see where our information is strong and where it is not.</p>
+  <div class="matrixwrap">
+    <table class="matrix">
+      <caption class="sr-only">Coverage levels by data class</caption>
+      <thead><tr><th scope="col">Data</th><th scope="col">Coverage</th></tr></thead>
+      <tbody>
+        {% for k, v in coverage.items() %}
+        <tr><th scope="row">{{ k | capitalize }}</th><td>{{ v }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if primary %}{{ office_referral(primary) }}{% endif %}
+{% endif %}
+{% endblock %}

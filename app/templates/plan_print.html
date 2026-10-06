@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voting plan — {{ election.name }} — Civic Compass</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<div class="demobar" role="note">
+  <p><strong>Demonstration data.</strong> This plan was generated from invented data and is not real
+  election information.</p>
+</div>
+<main id="main" class="wrap">
+  <h1>Voting plan</h1>
+  <p class="lede">{{ election.name }} · {{ election.date_display }} ·
+     {{ METHOD_LABELS[method] }}</p>
+  <p>Jurisdictions: {% for j in chain %}{{ j.name }}{% if not loop.last %}; {% endif %}{% endfor %}</p>
+
+  <h2>Checklist</h2>
+  {% if deadlines['items'] %}
+  <ul class="dllist">
+    {% for d in deadlines['items'] %}
+    <li class="dl">
+      <h3 style="margin-top:0">☐ {{ DEADLINE_LABELS[d.action] }}</h3>
+      <p class="dl__when">{{ d.display }}</p>
+      {% if d.scope_note %}<p class="dl__scope">{{ d.scope_note }}</p>{% endif %}
+      <p class="dl__scope">Status: {{ d.status.word }}. Source: {{ d.source.organization }} —
+         {{ d.source.source_url }} (last verified {{ d.source.last_verified_at[:10] }}).</p>
+      {% if d.conflict %}
+      <p class="dl__scope"><strong>Two sources disagree on this date.</strong>
+        {% for opt in d.conflict.options %}{{ opt.display }} ({{ opt.source.organization }}).
+        {% endfor %}Confirm with your election office.</p>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>We do not yet have deadlines on file for this method.</p>
+  {% endif %}
+
+  <h2>Where to vote</h2>
+  {% for g in locations %}{% if g['items'] %}
+  <h3>{{ g.label }}</h3>
+  <ul class="loclist">
+    {% for loc in g['items'] %}
+    <li class="loc">
+      <h4 style="margin-top:0">{{ loc.name }}</h4>
+      <p class="loc__addr">{{ loc.address_line }}, {{ loc.city }}, {{ loc.state_code }} {{ loc.postal_code or '' }}</p>
+      <p class="dl__scope">Dates: {{ loc.date_range_text or 'Not reported.' }} · Hours:
+         {{ loc.hours_text or 'Not reported.' }}</p>
+      <p class="dl__scope">Accessibility: {{ loc.accessibility_text or 'Not reported.' }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}{% endfor %}
+
+  <h2>Your election office</h2>
+  {% for j in chain %}
+  <p><strong>{{ j.name }}</strong> — {{ j.office_name }}<br>
+     {{ j.official_url }}{% if j.office_phone %} · {{ j.office_phone }}{% endif %}
+     {% if j.office_address %}<br>{{ j.office_address }}{% endif %}</p>
+  {% endfor %}
+  <p>Confirm every date and location above with your election office before you rely on it.</p>
+</main>
+</body>
+</html>

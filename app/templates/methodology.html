@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Methodology — Civic Compass{% endblock %}
+{% block content %}
+<h1>How this works</h1>
+<p class="lede">Everything below is published so you can judge our information rather than trust it.
+Where we are weak, we say so on this page and in the product itself.</p>
+
+<h2>Where information comes from</h2>
+<p>Sources are ranked by who has administrative authority over the fact in question, not by
+reputation. Authority is specific: a state agency is the authority for statewide registration rules
+but not for a city drop-box location.</p>
+<div class="card">
+  <ol>
+    <li><strong>The responsible election authority</strong> — your county, city, or state election
+      office. This is the only source that can make a fact “official” here.</li>
+    <li><strong>Federal references</strong> — <a href="https://www.usa.gov/how-to-vote" rel="noopener">USA.gov</a>,
+      the <a href="https://www.eac.gov/" rel="noopener">U.S. Election Assistance Commission</a>, and
+      <a href="https://www.fvap.gov/" rel="noopener">FVAP</a> for national explanations and military
+      and overseas voting. <a href="https://www.nass.org/initiatives/trustedinfo" rel="noopener">NASS
+      TrustedInfo</a> and <a href="https://www.canivote.org" rel="noopener">CanIVote.org</a> help
+      locate the responsible office.</li>
+    <li><strong>Civic data partners</strong> — used only to widen coverage, always labelled
+      “aggregated,” never presented as confirmed.</li>
+    <li><strong>Our own explanations</strong> — plain-language definitions only. We never state a
+      jurisdiction-specific legal fact in our own voice.</li>
+  </ol>
+</div>
+
+<h2>What the status words mean</h2>
+<div class="card">
+  <dl class="cand__fields">
+    {% for code in ['official','verified','aggregated','pending','conflicting','historical',
+                    'unofficial','certified'] %}
+    <div class="cand__field">
+      <dt style="font-size:.9375rem;text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:600;color:var(--ink)">{{ STATUS_WORDS[code] }}</dt>
+      <dd>{{ STATUS_EXPLANATIONS[code] }}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+</div>
+
+<h2>How freshness works</h2>
+<p>Every record has a window in which its verification stays valid. The window shortens as an
+election approaches, and it is shortest for the things that change late and matter most: polling
+places, deadlines, and results. When a record passes its window it is automatically downgraded to
+“Not yet confirmed.” We would rather show you a gap than a stale answer wearing a confident label.</p>
+
+<h2>When sources disagree</h2>
+<p>If two election authorities publish different information for the same fact, we show both, label
+the record as conflicting, and send you to the election office. We do not silently choose. In a
+checklist we display the earlier of two dates, because acting early is the recoverable error, and we
+say that we are doing it.</p>
+
+<h2>Coverage</h2>
+<p>This table is generated from the database that serves the rest of the site, so what we claim here
+and what we ship cannot drift apart.</p>
+<div class="matrixwrap">
+  <table class="matrix">
+    <caption style="text-align:left;padding-bottom:.4rem;font-size:.8125rem;color:var(--ink-2)">
+      Coverage level by jurisdiction and data class</caption>
+    <thead>
+      <tr>
+        <th scope="col">Jurisdiction</th>
+        {% for c in classes %}<th scope="col">{{ c | capitalize }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in matrix %}
+      <tr>
+        <th scope="row">{{ row.jurisdiction.name }}</th>
+        {% for c in classes %}<td>{{ row.cells.get(c, 'none') }}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p style="font-size:.875rem;color:var(--ink-2)">“None” never means there is nothing to vote on. It
+means we have not confirmed anything, and you should use your election office.</p>
+
+<h2>Source health</h2>
+<div class="matrixwrap">
+  <table class="matrix">
+    <caption style="text-align:left;padding-bottom:.4rem;font-size:.8125rem;color:var(--ink-2)">
+      When each source was last verified</caption>
+    <thead>
+      <tr><th scope="col">Source</th><th scope="col">Tier</th><th scope="col">Last verified</th>
+          <th scope="col">Age</th><th scope="col">State</th></tr>
+    </thead>
+    <tbody>
+      {% for s in health %}
+      <tr>
+        <th scope="row"><a href="{{ s.source_url }}" rel="noopener">{{ s.organization }}</a></th>
+        <td>{{ s.trust_tier }}</td>
+        <td>{{ s.last_verified_at[:10] }}</td>
+        <td>{{ s.age_days }} days</td>
+        <td>{{ 'Needs attention' if s.alert else 'Within window' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h2>Neutrality</h2>
+<p>Civic Compass does not endorse, rank, recommend, or fundraise, and accepts no advertising or paid
+placement. Candidates and measures within a contest render through one shared template, so they
+cannot be given different space, weight, or imagery. Ordering is computed at page-render time from a
+rule that is stated on the page; there is no stored order and no ranking field in the database to
+edit. Party labels appear as text and never as colour.</p>
+<p>Candidates receive identical questions in identical order. An unanswered question is shown as “No
+response provided.” We do not describe that as a refusal, and we do not interpret it.</p>
+
+<h2>Privacy</h2>
+<div class="card">
+  <p><strong>We store:</strong> saved plans, if you choose to create one — a random link with an
+  expiry date, holding only a jurisdiction, an election, and a voting method. Correction reports, and
+  an email address only if you choose to give one, which is deleted when the report is resolved.</p>
+  <p><strong>We do not store:</strong> the address or ZIP code you enter. It is used to work out your
+  jurisdictions inside a single request and then discarded. It is never placed in a web address,
+  never written to a log, and never sent to a third party.</p>
+  <p><strong>We never record or infer:</strong> your party, your political views, which candidates
+  you looked at, or anything derived from them. The database has no field for it.</p>
+  <p><strong>We do not:</strong> run advertising, sell or share location data, use third-party
+  analytics, or send notifications about candidates.</p>
+</div>
+
+<h2>What we do not know</h2>
+<p>We do not know whether you are registered. We do not know which precinct you are assigned to
+unless an election office publishes it. We do not know about a late court order, an emergency
+polling-place change, or a candidate withdrawal until a source publishes it and we ingest it. For
+anything time-critical, the election office is faster and more reliable than we are.</p>
+{% endblock %}

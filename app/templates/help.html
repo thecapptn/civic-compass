@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% from "_macros.html" import office_referral %}
+{% block title %}Help — Civic Compass{% endblock %}
+{% block content %}
+<h1>Help</h1>
+<p class="lede">Plain-language explanations of the words used on ballots and in election
+information. Rules for each of these vary by state — your election office is the authority for how
+they work where you vote.</p>
+
+<h2>Words you will see</h2>
+<div class="card">
+  <dl class="cand__fields">
+    {% for term, meaning in [
+      ('Primary', 'An election that narrows the field before a later election. In some states you
+       must be affiliated with a party to take part; in others you do not. Rules vary by state.'),
+      ('Runoff', 'A follow-up election held when no candidate met the threshold to win outright.'),
+      ('Recall', 'An election on whether an official should be removed from office before their term
+       ends. Not available everywhere.'),
+      ('Special election', 'An election held outside the normal schedule, often to fill a seat that
+       became vacant.'),
+      ('Ballot measure', 'A question put directly to voters, such as a bond, a tax, or a change to a
+       charter or constitution.'),
+      ('Precinct', 'The smallest voting area. Your precinct usually determines your Election Day
+       polling place.'),
+      ('Provisional ballot', 'A ballot set aside to be counted once eligibility is confirmed. Not
+       every state uses this term or this process.'),
+      ('Mail or absentee ballot', 'A ballot you receive and return outside a polling place. Request
+       and return rules, including deadlines, vary widely.'),
+      ('Ballot cure', 'A process in some states for fixing a problem with a returned ballot, such as
+       a missing signature, before the deadline.'),
+      ('Canvass', 'The official process of checking and reconciling the count after election night.'),
+      ('Certification', 'The step that makes a result official. Before certification, results are
+       unofficial.'),
+      ('Recount', 'A re-tabulation of votes, sometimes automatic when a margin is close.'),
+      ('Sample ballot', 'A copy of the ballot published by an election office before an election.'),
+      ('Partisan contest', 'A contest where a party label appears on the ballot.'),
+      ('Nonpartisan contest', 'A contest where no party label appears on the ballot.'),
+      ('Retention election', 'A yes-or-no vote on whether a sitting judge stays in office.'),
+      ('At-large seat', 'A seat elected by an entire jurisdiction rather than by a district.'),
+      ('UOCAVA', 'The federal law covering voting by military and overseas citizens.')] %}
+    <div class="cand__field">
+      <dt style="font-size:.9375rem;text-transform:none;letter-spacing:0;font-family:var(--body);font-weight:600;color:var(--ink)">{{ term }}</dt>
+      <dd>{{ meaning }}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+</div>
+
+<h2>Common questions</h2>
+<div class="card">
+  <h3 style="margin-top:0">Can Civic Compass tell me if I am registered?</h3>
+  <p>No. We do not check voter records and we never claim you are registered or eligible. Your state
+  election office runs the official lookup. We link to it rather than repeating what it says.</p>
+
+  <h3>Why does a contest say you have no data?</h3>
+  <p>Election data is published by thousands of separate offices in different formats and on
+  different schedules. When we cannot confirm something from a responsible authority, we say so
+  rather than guessing. An empty space would read as “there is nothing here,” which is a different
+  and more damaging claim.</p>
+
+  <h3>Why do two dates sometimes appear for the same deadline?</h3>
+  <p>Occasionally two election authorities publish different information. Rather than picking one,
+  we show both and send you to the election office. We display the earlier date in checklists,
+  because acting earlier is the safer error, but we tell you we are doing it.</p>
+
+  <h3>Does Civic Compass recommend candidates?</h3>
+  <p>No, and it is built so that it cannot. There is no ranking, scoring, or matching feature, no
+  advertising, and no paid placement. Entries within a contest use one shared template, so they
+  cannot be given different visual weight.</p>
+
+  <h3>What do you do with my address?</h3>
+  <p>We use it to work out which jurisdictions you are in, then discard it. It is never written to a
+  database, never placed in a web address, and never shared. We do not record or infer anything
+  about your political preferences.</p>
+</div>
+
+<h2>Report a problem</h2>
+<p>If something here is wrong or out of date, tell us. Reports get a public reference number so you
+can see what happened to them.</p>
+<p><a class="btn" href="/report">Report a problem</a></p>
+
+{% if chain %}{{ office_referral(chain[0]) }}
+{% else %}
+<h2>Find your election office</h2>
+<ul class="orlist">
+  <li><a href="https://www.canivote.org" rel="noopener">CanIVote.org</a></li>
+  <li><a href="https://www.usa.gov/state-election-office" rel="noopener">USA.gov: state and local election offices</a></li>
+  <li><a href="https://www.usa.gov/how-to-vote" rel="noopener">USA.gov: how, when, and where to vote</a></li>
+  <li><a href="https://www.eac.gov/voting-accessibility" rel="noopener">EAC: voting accessibility</a></li>
+  <li><a href="https://www.fvap.gov/" rel="noopener">FVAP: military and overseas voting</a></li>
+</ul>
+{% endif %}
+{% endblock %}

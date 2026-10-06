@@ -1,0 +1,311 @@
+{# Every candidate and every measure in the product renders through these macros.
+   There is deliberately no branch on party, incumbency, filing status (beyond a neutral label),
+   or any other attribute that could vary presentation between entries in the same contest.
+   docs/08 checks N4 and N5 assert this. #}
+
+{% macro status_word(status) -%}
+<span class="status status--{{ status.code }}">
+  <span class="status__dot" aria-hidden="true"></span>{{ status.word }}
+</span>
+{%- endmacro %}
+
+{% macro source_strip(source, status, entity_table='', entity_id='') -%}
+{# The provenance receipt. Required on every rendered fact. #}
+<div class="srcstrip">
+  <dl class="srcstrip__grid">
+    <div class="srcstrip__pair">
+      <dt>Status</dt><dd>{{ status.word }}</dd>
+    </div>
+    <div class="srcstrip__pair">
+      <dt>Source</dt>
+      <dd><a href="{{ source.source_url }}" rel="noopener nofollow">{{ source.organization }}</a></dd>
+    </div>
+    <div class="srcstrip__pair">
+      <dt>Retrieved</dt><dd>{{ source.retrieved_at[:10] }}</dd>
+    </div>
+    <div class="srcstrip__pair">
+      <dt>Last verified</dt><dd>{{ source.last_verified_at[:10] }}</dd>
+    </div>
+    {% if source.election_id %}
+    <div class="srcstrip__pair"><dt>Election ID</dt><dd>{{ source.election_id }}</dd></div>
+    {% endif %}
+  </dl>
+  <p class="srcstrip__note">{{ status.explanation }}</p>
+  {% if entity_id %}
+  <a class="srcstrip__report" href="/report?entity_table={{ entity_table }}&amp;entity_id={{ entity_id }}">Report a problem with this information</a>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro office_referral(jurisdiction, heading='Contact your election office') -%}
+<section class="referral" aria-labelledby="ref-{{ jurisdiction.id }}">
+  <h3 class="referral__h" id="ref-{{ jurisdiction.id }}">{{ heading }}</h3>
+  <p class="referral__lead">
+    {{ jurisdiction.office_name }} administers elections for {{ jurisdiction.name }}. They are the
+    authority for this information.
+  </p>
+  <ul class="referral__list">
+    <li><a href="{{ jurisdiction.official_url }}" rel="noopener">Official website</a></li>
+    {% if jurisdiction.office_phone %}<li>Phone: <a href="tel:{{ jurisdiction.office_phone }}">{{ jurisdiction.office_phone }}</a></li>{% endif %}
+    {% if jurisdiction.office_email %}<li>Email: <a href="mailto:{{ jurisdiction.office_email }}">{{ jurisdiction.office_email }}</a></li>{% endif %}
+    {% if jurisdiction.office_address %}<li>Address: {{ jurisdiction.office_address }}</li>{% endif %}
+    <li><a href="https://www.canivote.org" rel="noopener">CanIVote.org</a> and
+        <a href="https://www.usa.gov/state-election-office" rel="noopener">the USA.gov office directory</a>
+        can also help you find an election office.</li>
+  </ul>
+</section>
+{%- endmacro %}
+
+{% macro no_data(message, jurisdiction=None) -%}
+<div class="nodata" role="note">
+  <p class="nodata__msg">{{ message }}</p>
+  {% if jurisdiction %}
+  <p class="nodata__act">
+    <a href="{{ jurisdiction.official_url }}" rel="noopener">{{ jurisdiction.office_name }}</a>
+    can tell you what applies to your address.
+  </p>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro candidate_card(c, contest, hl=4) -%}
+{# One template, every candidate. Same element, same classes, same field set, same order. #}
+<li class="cand">
+  <article class="cand__body" aria-labelledby="cand-{{ c.id }}">
+    <h{{ hl }} class="cand__name" id="cand-{{ c.id }}">{{ c.ballot_name }}</h{{ hl }}>
+
+    <dl class="cand__fields">
+      <div class="cand__field">
+        <dt>Office</dt>
+        <dd>{{ contest.office_name }}</dd>
+      </div>
+      <div class="cand__field">
+        <dt>Filing status</dt>
+        <dd>
+          {{ {'filed': 'Filed', 'qualified': 'Qualified for the ballot',
+              'withdrawn': 'Withdrawn', 'disqualified': 'Not on the ballot',
+              'write_in': 'Registered write-in'}[c.filing_status] }}
+        </dd>
+      </div>
+      <div class="cand__field">
+        <dt>Party label on the ballot</dt>
+        <dd>{{ c.party_label_official or 'No party label appears for this contest.' }}</dd>
+      </div>
+      <div class="cand__field">
+        <dt>Incumbency</dt>
+        <dd>{% if c.incumbent_source %}Reported as the incumbent by {{ c.incumbent_source }}.
+            {% else %}Not reported by our sources.{% endif %}</dd>
+      </div>
+      <div class="cand__field">
+        <dt>Candidate website</dt>
+        <dd>{% if c.website_url %}<a href="{{ c.website_url }}" rel="noopener nofollow">{{ c.website_url }}</a>
+            {% else %}No response provided.{% endif %}</dd>
+      </div>
+      <div class="cand__field">
+        <dt>Public filing record</dt>
+        <dd>{% if c.filing_url %}<a href="{{ c.filing_url }}" rel="noopener nofollow">Official disclosure data</a>
+            {% else %}Not linked by our sources.{% endif %}</dd>
+      </div>
+      <div class="cand__field">
+        <dt>Biography</dt>
+        <dd>{% if c.bio_text %}{{ c.bio_text }}
+            <span class="cand__attrib">Supplied by: {{ c.bio_provided_by or 'source listed below' }}.</span>
+            {% else %}No response provided.{% endif %}</dd>
+      </div>
+    </dl>
+
+    {% if c.is_withdrawn %}
+    <p class="cand__withdrawn" role="note">
+      This candidate is shown as {{ 'withdrawn' if c.filing_status == 'withdrawn' else 'not on the ballot' }}
+      by the election office. The entry is kept here so the record stays complete. Votes for a
+      withdrawn candidate may be handled differently by jurisdiction — ask your election office.
+    </p>
+    {% endif %}
+
+    {% if c.questionnaire %}
+    <div class="cand__quest">
+      <h{{ hl + 1 }} class="cand__questh">Standard questions</h{{ hl + 1 }}>
+      <p class="cand__questnote">Every candidate in this contest received the same questions, in the
+        same order, with the same length limit.</p>
+      <dl class="cand__fields">
+        {% for q in c.questionnaire %}
+        <div class="cand__field">
+          <dt>{{ q.prompt }}</dt>
+          <dd>{% if q.answered %}{{ q.response }}{% else %}No response provided.{% endif %}</dd>
+        </div>
+        {% endfor %}
+      </dl>
+    </div>
+    {% endif %}
+
+    {{ source_strip(c.source, c.status, 'candidate', c.id) }}
+  </article>
+</li>
+{%- endmacro %}
+
+{% macro contest_block(c, jid='', linked=True, hl=3) -%}
+<article class="contest" aria-labelledby="contest-{{ c.id }}">
+  <header class="contest__head">
+    <h{{ hl }} class="contest__title" id="contest-{{ c.id }}">
+      {% if linked %}<a href="/contest/{{ c.id }}?j={{ jid }}">{{ c.office_name }}</a>
+      {% else %}{{ c.office_name }}{% endif %}
+    </h{{ hl }}>
+    <p class="contest__meta">
+      {{ c.jurisdiction.name if c.jurisdiction else '' }}{% if c.district %} · {{ c.district.name }}{% endif %}
+      · {{ c.seats }} seat{{ 's' if c.seats != 1 }}{% if c.term_text %} · {{ c.term_text }}{% endif %}
+      · {{ {'partisan': 'Partisan contest', 'nonpartisan': 'Nonpartisan contest',
+            'retention': 'Retention contest', 'measure': 'Ballot question',
+            'unspecified': 'Classification not reported'}[c.classification] }}
+    </p>
+    <details class="why">
+      <summary>Why am I seeing this?</summary>
+      <p>{{ c.why_relevant }}</p>
+    </details>
+  </header>
+
+  {% if c.coverage in ('partial', 'pending', 'none') %}
+  <div class="coverage" role="note">
+    <p><strong>{{ 'This list may be incomplete.' if c.coverage == 'partial'
+                  else 'We do not yet have reliable data for this contest.' }}</strong></p>
+    {% if c.coverage_note %}<p>{{ c.coverage_note }}</p>{% endif %}
+    {% if c.jurisdiction %}
+    <p>Contact <a href="{{ c.jurisdiction.official_url }}" rel="noopener">{{ c.jurisdiction.office_name }}</a>
+       to confirm what appears on your ballot.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if c.level == 'measure' and c.measure %}
+    {{ measure_block(c.measure, short=True, hl=hl + 1) }}
+  {% elif c.candidates %}
+    <p class="orderrule">{{ ORDER_RULE_WORDS[c.order_rule] }}</p>
+    <ul class="candlist">
+      {% for cd in c.candidates %}{{ candidate_card(cd, c, hl=hl + 1) }}{% endfor %}
+    </ul>
+  {% elif c.coverage not in ('partial', 'pending', 'none') %}
+    {{ no_data('No candidates are listed for this contest yet.', c.jurisdiction) }}
+  {% endif %}
+
+  {{ source_strip(c.source, c.status, 'contest', c.id) }}
+</article>
+{%- endmacro %}
+
+{% macro measure_block(m, short=False, hl=4) -%}
+<div class="measure">
+  <h{{ hl }} class="measure__title">{{ m.official_title }}</h{{ hl }}>
+
+  <section class="measure__section" aria-label="What the measure says">
+    <h{{ hl + 1 }} class="measure__h">What the measure says</h{{ hl + 1 }}>
+    <blockquote class="measure__text">{{ m.ballot_text }}</blockquote>
+  </section>
+
+  {% if m.summary_text %}
+  <section class="measure__section" aria-label="Official summary">
+    <h{{ hl + 1 }} class="measure__h">Official summary</h{{ hl + 1 }}>
+    <p>{{ m.summary_text }}</p>
+    <p class="cand__attrib">Prepared by: {{ m.summary_author or 'the responsible authority' }}.</p>
+  </section>
+  {% endif %}
+
+  {% if m.fiscal_note %}
+  <section class="measure__section" aria-label="Fiscal note">
+    <h{{ hl + 1 }} class="measure__h">Fiscal note</h{{ hl + 1 }}>
+    <p>{{ m.fiscal_note }}</p>
+  </section>
+  {% endif %}
+
+  {% if not short %}
+  <section class="measure__section" aria-label="Arguments submitted about this measure">
+    <h{{ hl + 1 }} class="measure__h">Arguments submitted about this measure</h{{ hl + 1 }}>
+    <p class="orderrule">These arguments were submitted to the official voter guide. They are
+      reproduced as submitted and are not written or checked by Civic Compass. This information is
+      provided for reference and does not represent an endorsement.</p>
+    <div class="args">
+      {% for pair in [('In favor', m.arguments_for), ('In opposition', m.arguments_against)] %}
+      <section class="args__col" aria-label="Arguments {{ pair[0] | lower }}">
+        <h{{ hl + 2 }} class="args__h">{{ pair[0] }}</h{{ hl + 2 }}>
+        {% if pair[1] %}
+          {% for a in pair[1] %}
+          <div class="args__item">
+            <p>{{ a.body_text }}</p>
+            <p class="cand__attrib">Submitted by: {{ a.submitted_by }}.</p>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p class="args__none">No argument {{ pair[0] | lower }} was submitted to the official
+             voter guide.</p>
+        {% endif %}
+      </section>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if m.full_text_url %}
+  <p class="measure__full"><a href="{{ m.full_text_url }}" rel="noopener">Read the full official
+     text from the election office</a></p>
+  {% endif %}
+
+  {{ source_strip(m.source, m.status, 'measure', m.id) }}
+</div>
+{%- endmacro %}
+
+{% macro location_card(loc, hl=3) -%}
+<li class="loc">
+  <article aria-labelledby="loc-{{ loc.id }}">
+    <h{{ hl }} class="loc__name" id="loc-{{ loc.id }}">{{ loc.name }}</h{{ hl }}>
+    <p class="loc__addr">
+      <span class="loc__addrtext">{{ loc.address_line }}, {{ loc.city }}, {{ loc.state_code }}
+        {{ loc.postal_code or '' }}</span>
+    </p>
+    <dl class="loc__fields">
+      <div class="cand__field"><dt>Dates</dt><dd>{{ loc.date_range_text or 'Not reported.' }}</dd></div>
+      <div class="cand__field"><dt>Hours</dt><dd>{{ loc.hours_text or 'Not reported.' }}</dd></div>
+      <div class="cand__field"><dt>Accessibility</dt>
+        <dd>{{ loc.accessibility_text or 'Not reported by our sources. Contact the election office to confirm what is available.' }}</dd></div>
+      <div class="cand__field"><dt>Language assistance</dt>
+        <dd>{{ loc.languages_text or 'Not reported by our sources.' }}</dd></div>
+      <div class="cand__field"><dt>Getting there</dt>
+        <dd>{{ loc.transit_text or 'Not reported by our sources.' }}</dd></div>
+    </dl>
+    <p class="loc__warn" role="note">Hours and locations can change close to an election. Check with
+      the election office before you travel.</p>
+    {{ source_strip(loc.source, loc.status, 'voting_location', loc.id) }}
+  </article>
+</li>
+{%- endmacro %}
+
+{% macro deadline_row(d, hl=3) -%}
+<li class="dl">
+  <div class="dl__body">
+    <h{{ hl }} class="dl__label">{{ DEADLINE_LABELS[d.action] }}</h{{ hl }}>
+    <p class="dl__when">{{ d.display }}</p>
+    <p class="dl__count">
+      {% if d.days_away > 1 %}{{ d.days_away }} days from today.
+      {% elif d.days_away == 1 %}Tomorrow.
+      {% elif d.days_away == 0 %}Today.
+      {% else %}This date has passed.{% endif %}
+    </p>
+    {% if d.scope_note %}<p class="dl__scope">{{ d.scope_note }}</p>{% endif %}
+    {% if d.exception_text %}<p class="dl__scope">{{ d.exception_text }}</p>{% endif %}
+
+    {% if d.conflict %}
+    <div class="conflict" role="note">
+      <p><strong>Two sources show different information.</strong> Check the official election office
+         before acting.</p>
+      <ul>
+        {% for opt in d.conflict.options %}
+        <li>{{ opt.display }} — reported by
+          <a href="{{ opt.source.source_url }}" rel="noopener">{{ opt.source.organization }}</a>.
+          {% if opt.scope_note %}{{ opt.scope_note }}{% endif %}</li>
+        {% endfor %}
+      </ul>
+      <p>We are showing the earlier of the two dates above. Acting by the earlier date is the safer
+         choice, but confirm with your election office.</p>
+    </div>
+    {% endif %}
+
+    {{ source_strip(d.source, d.status, 'deadline', d.id) }}
+  </div>
+</li>
+{%- endmacro %}

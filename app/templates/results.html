@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_word, source_strip, no_data %}
+{% block title %}Results — {{ election.name }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>Results</h1>
+<p class="lede">{{ election.name }} · {{ election.date_display }}</p>
+
+<div class="nodata" role="note">
+  <p class="nodata__msg"><strong>Reported results are not final results.</strong> On election night
+  and for some time afterwards, the numbers published by election offices are unofficial. They change
+  as remaining ballots are counted, reviewed, and added.</p>
+</div>
+
+{% for r in results %}
+<section class="rescontest" aria-labelledby="res-{{ r.contest.id }}">
+  <h2 id="res-{{ r.contest.id }}" style="margin-top:0;font-size:1.125rem">{{ r.contest.office_name }}</h2>
+  {% if r['rows'] %}
+    <p>
+      {% if r.reporting_status == 'certified' %}
+        <span class="status status--certified"><span class="status__dot" aria-hidden="true"></span>Certified</span>
+      {% elif r.reporting_status == 'recount' %}
+        <span class="status status--conflicting"><span class="status__dot" aria-hidden="true"></span>Recount under way</span>
+      {% elif r.reporting_status == 'canvassing' %}
+        <span class="status status--pending"><span class="status__dot" aria-hidden="true"></span>Canvass under way</span>
+      {% else %}
+        <span class="status status--unofficial"><span class="status__dot" aria-hidden="true"></span>Reported, not certified</span>
+      {% endif %}
+    </p>
+    <p style="font-size:.875rem;color:var(--ink-2)">
+      {% if r.precincts_total %}{{ r.precincts_reporting }} of {{ r.precincts_total }} precincts
+      reporting. {% endif %}
+      Last updated {{ r.reported_at[:16] | replace('T', ' ') }} UTC.
+      {% if r.certifying_authority %}Certified by {{ r.certifying_authority }}.{% endif %}
+    </p>
+    <table class="res">
+      <caption style="text-align:left;font-size:.8125rem;color:var(--ink-2);padding-bottom:.4rem">
+        Vote counts as reported. This table is a record of a count, not a ranking of people.</caption>
+      <thead>
+        <tr><th scope="col">Name on the ballot</th><th scope="col" class="num">Votes</th>
+            <th scope="col" class="num">Share</th></tr>
+      </thead>
+      <tbody>
+        {% for row in r['rows'] %}
+        <tr><th scope="row" style="font-weight:400">{{ row.label }}</th>
+            <td class="num">{{ '{:,}'.format(row.votes) }}</td>
+            <td class="num">{{ row.share }}%</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {{ source_strip(r['rows'][0].source, r['rows'][0].status, 'result', r['rows'][0].id) }}
+  {% else %}
+    {{ no_data('No results have been reported for this contest.') }}
+  {% endif %}
+</section>
+{% else %}
+  {{ no_data('No results have been reported for this election.') }}
+{% endfor %}
+
+<h2>What happens after election night</h2>
+<div class="card">
+  <h3 style="margin-top:0">Canvass</h3>
+  <p>After polls close, election officials check and reconcile the count: ballots that arrived late
+  but on time, ballots that needed review, and any discrepancies between the number of ballots and
+  the number of voters. This process is called the canvass, and it takes days to weeks depending on
+  the jurisdiction.</p>
+  <h3>Certification</h3>
+  <p>When the canvass is complete, the responsible authority certifies the result. Certification is
+  what makes a result official. Before that point, any number you see — including on this page — is
+  a report of a count in progress.</p>
+  <h3>Recounts</h3>
+  <p>Some jurisdictions recount automatically when a margin is very close; in others, a recount can
+  be requested. A recount can change a reported result.</p>
+  <p>The U.S. Election Assistance Commission explains this process at
+    <a href="https://www.eac.gov/election-officials/election-results-canvass-and-certification"
+       rel="noopener">eac.gov</a>. Only election officials publish official results.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from "_macros.html" import contest_block, office_referral %}
+{% block title %}{{ contest.office_name }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>{{ contest.office_name }}</h1>
+<p class="lede">{{ contest.election.name }} · {{ contest.election.date_display }}</p>
+<p><a href="/ballot/{{ contest.election.id }}?j={{ jid }}">Back to the ballot preview</a></p>
+
+{{ contest_block(contest, jid, linked=False, hl=2) }}
+
+<h2>About this information</h2>
+<p>This information is provided for reference and does not represent an endorsement. Where a
+candidate has not supplied an answer, the field reads “No response provided.” We do not interpret a
+missing answer.</p>
+
+{% if contest.jurisdiction %}{{ office_referral(contest.jurisdiction) }}{% endif %}
+{% endblock %}

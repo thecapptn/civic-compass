@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_macros.html" import source_strip, no_data, office_referral %}
+{% block title %}Voting rules — Civic Compass{% endblock %}
+{% block content %}
+<h1>Voting rules</h1>
+{% if not jid %}
+  <p class="lede">Rules differ by state and sometimes by locality. Choose a location so we show only
+  the rules that apply to it.</p>
+  <p><a class="btn" href="/">Choose a location</a></p>
+{% else %}
+<p class="lede">These are the rules reported by the election authorities for your jurisdictions.
+Where a rule is summarised here, the linked official page is the authority.</p>
+
+{% if groups %}
+  {% for g in groups %}
+  <section aria-labelledby="rule-{{ g.category }}">
+    <h2 id="rule-{{ g.category }}">{{ g.label }}</h2>
+    {% for r in g['items'] %}
+    <div class="card">
+      <h3 style="margin-top:0">{{ r.title }}</h3>
+      <p>{{ r.body_text }}</p>
+      {{ source_strip(r.source, r.status, 'rule', r.id) }}
+    </div>
+    {% endfor %}
+  </section>
+  {% endfor %}
+{% else %}
+  {{ no_data('We do not yet have voting rules on file for these jurisdictions.',
+     chain[0] if chain else None) }}
+{% endif %}
+
+{% if chain %}{{ office_referral(chain[0]) }}{% endif %}
+{% endif %}
+{% endblock %}

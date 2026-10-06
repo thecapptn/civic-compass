@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import contest_block, no_data, office_referral %}
+{% block title %}Ballot preview — {{ election.name }} — Civic Compass{% endblock %}
+{% block content %}
+<h1>Ballot preview</h1>
+<p class="lede">{{ election.name }} · {{ election.date_display }}. This is a preview assembled from
+the sources listed under each entry. It is not an official sample ballot. Your official ballot comes
+from your election office.</p>
+
+<div class="nodata" role="note">
+  <p class="nodata__msg">Civic Compass does not recommend, rank, or score any candidate or position.
+  Entries within a contest are listed in a stated neutral order, use the same fields, and are given
+  the same space.</p>
+</div>
+
+{% if groups %}
+  <nav aria-label="Contests on this ballot">
+    <h2>On this ballot</h2>
+    <ul class="orlist">
+      {% for g in groups %}
+      <li><a href="#level-{{ g.level }}">{{ g.label }} ({{ g.contests | length }})</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  {% for g in groups %}
+  <section aria-labelledby="level-{{ g.level }}">
+    <h2 id="level-{{ g.level }}">{{ g.label }}</h2>
+    {% for c in g.contests %}{{ contest_block(c, jid) }}{% endfor %}
+  </section>
+  {% endfor %}
+{% else %}
+  {{ no_data('We do not yet have reliable ballot data for your jurisdictions in this election.
+     Your election office can tell you what will appear on your ballot.',
+     chain[0] if chain else None) }}
+{% endif %}
+
+{% if chain %}{{ office_referral(chain[0]) }}{% endif %}
+{% endblock %}
